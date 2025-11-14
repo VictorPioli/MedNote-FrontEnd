@@ -1,0 +1,226 @@
+.diagnosis-result {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.result-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.result-header h2 {
+  color: var(--text-color);
+  margin-bottom: 1rem;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.disclaimer {
+  background: linear-gradient(135deg, var(--background-secondary), var(--background-color));
+  border: 1px solid var(--accent-color);
+  border-radius: 15px;
+  padding: 1rem;
+  margin: 1rem 0;
+  color: var(--text-color);
+  font-weight: 500;
+  box-shadow: 0 4px 15px var(--shadow-light);
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.result-card {
+  background: var(--background-color);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px var(--shadow-light);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color);
+}
+
+.result-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px var(--shadow-medium);
+}
+
+.result-card h3 {
+  margin: 0;
+  padding: 1rem 1.5rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.diagnosis-card h3 {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+  color: white;
+}
+
+.diseases-card h3 {
+  background: linear-gradient(135deg, var(--secondary-color) 0%, var(--secondary-light) 100%);
+  color: white;
+}
+
+.exams-card h3 {
+  background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-light) 100%);
+  color: white;
+}
+
+.medications-card h3 {
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+  color: white;
+}
+
+.content {
+  padding: 1.5rem;
+}
+
+.content p {
+  margin: 0;
+  line-height: 1.6;
+  color: var(--text-color);
+  font-size: 1rem;
+}
+
+.content ul {
+  margin: 0;
+  padding-left: 1.5rem;
+  list-style-type: none;
+}
+
+.content li {
+  margin-bottom: 0.75rem;
+  position: relative;
+  line-height: 1.5;
+  color: var(--text-color);
+  padding-left: 1rem;
+}
+
+.content li:before {
+  content: "•";
+  color: #667eea;
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.content li:last-child {
+  margin-bottom: 0;
+}
+
+.result-actions {
+  text-align: center;
+  margin: 2rem 0;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-chat {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 200px;
+}
+
+.btn-chat:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-new-session {
+  background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 200px;
+}
+
+.btn-new-session:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(81, 207, 102, 0.3);
+}
+
+.medical-disclaimer {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.medical-disclaimer p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.medical-disclaimer strong {
+  color: #495057;
+}
+
+@media (max-width: 768px) {
+  .result-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .result-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .content {
+    padding: 1rem;
+  }
+  
+  .result-card h3 {
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+  }
+  
+  .result-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .btn-chat,
+  .btn-new-session {
+    width: 100%;
+    min-width: auto;
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .diagnosis-result {
+    padding: 0 0.5rem;
+  }
+  
+  .disclaimer {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+  
+  .medical-disclaimer {
+    padding: 1rem;
+  }
+}

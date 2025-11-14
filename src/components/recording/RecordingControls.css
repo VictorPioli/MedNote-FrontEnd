@@ -1,0 +1,137 @@
+.recording-controls {
+  text-align: center;
+  padding: 2rem;
+  background: var(--background-color);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px var(--shadow-light);
+  margin: 2rem 0;
+  border: 1px solid var(--border-color);
+}
+
+.control-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.btn {
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 15px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 180px;
+  box-shadow: 0 4px 15px var(--shadow-light);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px var(--shadow-medium);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+  color: white;
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, var(--secondary-color) 0%, var(--secondary-dark) 100%);
+  color: white;
+  animation: pulse 1.5s infinite;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, var(--secondary-color) 0%, var(--secondary-light) 100%);
+  color: white;
+}
+
+.recording-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  color: var(--secondary-color);
+  font-weight: bold;
+}
+
+.pulse {
+  width: 12px;
+  height: 12px;
+  background: var(--secondary-color);
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+.analyzing-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-color);
+  border-top: 2px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.speech-not-supported {
+  padding: 1rem;
+  background: var(--background-secondary);
+  border: 1px solid var(--accent-color);
+  border-radius: 12px;
+  color: var(--text-color);
+  box-shadow: 0 4px 15px var(--shadow-light);
+}
+
+.speech-not-supported p {
+  margin: 0.5rem 0;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .control-buttons {
+    flex-direction: column;
+  }
+  
+  .btn {
+    min-width: auto;
+    width: 100%;
+  }
+}

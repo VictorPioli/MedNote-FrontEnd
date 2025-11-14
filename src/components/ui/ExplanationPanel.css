@@ -1,0 +1,217 @@
+/* ExplanationPanel.css */
+.explanation-panel {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+  border-radius: 20px;
+  padding: 24px;
+  margin: 20px 0;
+  color: white;
+  box-shadow: 0 12px 40px var(--shadow-medium);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.explanation-header h3 {
+  margin: 0 0 20px 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.explanation-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.explanation-section {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 16px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.explanation-section h4 {
+  margin: 0 0 12px 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reasoning-text,
+.recommendation-text {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 12px;
+  line-height: 1.6;
+  font-size: 0.95rem;
+  border-left: 4px solid rgba(255, 255, 255, 0.4);
+}
+
+/* Barra de Confiança */
+.confidence-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.confidence-bar-container {
+  width: 100%;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+
+.confidence-bar {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.8s ease-out;
+  position: relative;
+}
+
+.confidence-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.confidence-text {
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-align: right;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Lista de Sintomas */
+.symptoms-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.symptom-tag {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.symptom-tag:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+/* Lista de Diagnósticos Diferenciais */
+.differential-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.differential-item {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 10px;
+  margin-bottom: 6px;
+  border-radius: 6px;
+  border-left: 3px solid rgba(255, 255, 255, 0.4);
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.differential-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(4px);
+}
+
+.differential-item:last-child {
+  margin-bottom: 0;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .explanation-panel {
+    padding: 16px;
+    margin: 16px 0;
+  }
+
+  .explanation-header h3 {
+    font-size: 1.3rem;
+    margin-bottom: 16px;
+  }
+
+  .explanation-section {
+    padding: 12px;
+  }
+
+  .explanation-section h4 {
+    font-size: 1rem;
+  }
+
+  .reasoning-text,
+  .recommendation-text {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+
+  .symptoms-list {
+    gap: 6px;
+  }
+
+  .symptom-tag {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+  }
+
+  .confidence-text {
+    text-align: center;
+    margin-top: 4px;
+  }
+}
+
+/* Animação de entrada */
+.explanation-panel {
+  animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Estados de confiança específicos */
+.confidence-high {
+  background: linear-gradient(90deg, #4CAF50, #66BB6A);
+}
+
+.confidence-medium {
+  background: linear-gradient(90deg, #FF9800, #FFB74D);
+}
+
+.confidence-low {
+  background: linear-gradient(90deg, #F44336, #EF5350);
+}
