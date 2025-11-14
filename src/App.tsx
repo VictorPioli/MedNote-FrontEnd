@@ -11,10 +11,9 @@ import {
 } from './components';
 import { audioRecorderService } from './services/audioRecorder';
 import { ApiService } from './services/api';
-import { historyService } from './services/historyService';
 import LanguageService from './services/languageService';
 import { AppState, DiagnosisResult, ConsultationRecord } from './types';
-import './App.css';
+import './styles/App.css';
 
 const initialState: AppState = {
   isRecording: false,

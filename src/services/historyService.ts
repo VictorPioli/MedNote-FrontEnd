@@ -1,223 +1,157 @@
-import { 
-  collection, 
-  addDoc, 
-  query, 
-  orderBy, 
-  limit, 
-  getDocs, 
-  deleteDoc, 
-  doc, 
-  getDoc,
-  Timestamp,
-  where
-} from 'firebase/firestore';
-import { db } from '../config/firebase';
+import axios from 'axios';
 import { ConsultationRecord, DiagnosisResult } from '../types';
+import { API_CONFIG, ERROR_MESSAGES } from '../constants';
 
-export class FirebaseHistoryService {
-  private readonly COLLECTION_NAME = 'MedNote'; // Usar mesma coleção do backend
-  private readonly MAX_RECORDS = 50; // Limite de consultas por usuário
+const api = axios.create({
+  baseURL: API_CONFIG.BASE_URL,
+  timeout: API_CONFIG.TIMEOUT,
+});
 
+export class BackendHistoryService {
   /**
-   * Salva uma consulta no histórico
-   */
-  async saveConsultation(
-    transcript: string, 
-    result: DiagnosisResult, 
-    patientId?: string
-  ): Promise<string> {
-    try {
-      const consultationData = {
-        timestamp: Timestamp.now(),
-        transcript: transcript.trim(),
-        result: {
-          diagnosis: result.diagnosis,
-          diseases: result.diseases,
-          exams: result.exams,
-          medications: result.medications
-        },
-        patientId: patientId || 'anonymous',
-        createdAt: new Date().toISOString(),
-        version: '1.0'
-      };
-
-      const docRef = await addDoc(collection(db, this.COLLECTION_NAME), consultationData);
-      
-      console.log('Consulta salva no histórico:', docRef.id);
-      return docRef.id;
-    } catch (error) {
-      console.error('Erro ao salvar consulta:', error);
-      throw new Error('Falha ao salvar consulta no histórico');
-    }
-  }
-
-  /**
-   * Recupera o histórico de consultas (adaptado para formato do backend)
+   * Recupera o histórico de consultas via backend
    */
   async getConsultationHistory(): Promise<ConsultationRecord[]> {
     try {
-      const q = query(
-        collection(db, this.COLLECTION_NAME),
-        orderBy('timestamp', 'desc'),
-        limit(this.MAX_RECORDS)
-      );
-
-      const querySnapshot = await getDocs(q);
-      const records: ConsultationRecord[] = [];
-
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        
-        // Adaptar dados do formato backend para frontend
-        const record: ConsultationRecord = {
-          id: doc.id,
-          timestamp: data.timestamp?.toDate() || data.createdAt?.toDate() || new Date(),
-          transcript: data.transcription || data.transcript, // Backend usa 'transcription'
-          result: {
-            diagnosis: data.diagnosis,
-            diseases: data.diseases || [],
-            exams: data.exams || [],
-            medications: data.medications || []
-          }
-        };
-        
-        records.push(record);
-      });
-
-      console.log(`✅ Recuperadas ${records.length} consultas do Firebase`);
-      return records;
-    } catch (error) {
-      console.error('❌ Erro ao carregar histórico do Firebase:', error);
+      console.log('🔄 Carregando histórico via backend...');
       
-      // Se der erro, retorna histórico vazio mas não quebra a app
-      return [];
+      const response = await api.get(API_CONFIG.ENDPOINTS.CONSULTATIONS);
+      
+      if (response.data.success) {
+        const consultations = response.data.consultations;
+        console.log(`📊 Histórico carregado: ${consultations.length} registros`);
+        
+        // Mapear dados do backend para o formato esperado pelo frontend
+        return consultations.map((consultation: any): ConsultationRecord => ({
+          id: consultation.id,
+          timestamp: new Date(consultation.timestamp),
+          transcript: consultation.transcription || consultation.transcript || '',
+          result: {
+            diagnosis: consultation.diagnosis || '',
+            diseases: Array.isArray(consultation.diseases) ? consultation.diseases : [],
+            exams: Array.isArray(consultation.exams) ? consultation.exams : [],
+            medications: Array.isArray(consultation.medications) ? consultation.medications : []
+          }
+        }));
+      } else {
+        console.error('❌ Backend retornou erro:', response.data.message);
+        return [];
+      }
+    } catch (error) {
+      console.error('❌ Erro ao carregar histórico via backend:', error);
+      if (axios.isAxiosError(error)) {
+        const message = error.response?.data?.message || 'Erro ao carregar histórico';
+        throw new Error(message);
+      }
+      throw new Error('Erro de conexão ao carregar histórico');
     }
   }
 
   /**
-   * Recupera uma consulta específica
+   * Recupera uma consulta específica via backend
    */
   async getConsultation(consultationId: string): Promise<ConsultationRecord | null> {
     try {
-      const docRef = doc(db, this.COLLECTION_NAME, consultationId);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        
-        // Adaptar dados do formato backend para frontend
+      const response = await api.get(`/api/consultations/${consultationId}`);
+      
+      if (response.data.success) {
+        const consultation = response.data.consultation;
         return {
-          id: docSnap.id,
-          timestamp: data.timestamp?.toDate() || data.createdAt?.toDate() || new Date(),
-          transcript: data.transcription || data.transcript, // Backend usa 'transcription'
+          id: consultation.id,
+          timestamp: new Date(consultation.timestamp),
+          transcript: consultation.transcription || consultation.transcript || '',
           result: {
-            diagnosis: data.diagnosis,
-            diseases: data.diseases || [],
-            exams: data.exams || [],
-            medications: data.medications || []
-          },
-          patientId: data.patientId,
-          audioFileName: data.audioFileName
+            diagnosis: consultation.diagnosis || '',
+            diseases: Array.isArray(consultation.diseases) ? consultation.diseases : [],
+            exams: Array.isArray(consultation.exams) ? consultation.exams : [],
+            medications: Array.isArray(consultation.medications) ? consultation.medications : []
+          }
         };
       }
-
       return null;
     } catch (error) {
-      console.error('Erro ao carregar consulta:', error);
-      return null;
+      if (axios.isAxiosError(error) && error.response?.status === 404) {
+        return null;
+      }
+      console.error('❌ Erro ao carregar consulta:', error);
+      throw new Error('Erro ao carregar consulta');
     }
   }
 
   /**
-   * Deleta uma consulta do histórico
+   * Deleta uma consulta via backend
    */
   async deleteConsultation(consultationId: string): Promise<void> {
     try {
-      await deleteDoc(doc(db, this.COLLECTION_NAME, consultationId));
-      console.log('Consulta deletada:', consultationId);
+      await api.delete(`/api/consultations/${consultationId}`);
+      console.log('✅ Consulta deletada via backend');
     } catch (error) {
-      console.error('Erro ao deletar consulta:', error);
-      throw new Error('Falha ao deletar consulta');
+      console.error('❌ Erro ao deletar consulta:', error);
+      if (axios.isAxiosError(error)) {
+        const message = error.response?.data?.message || 'Erro ao deletar consulta';
+        throw new Error(message);
+      }
+      throw new Error('Erro de conexão ao deletar consulta');
     }
   }
 
   /**
-   * Limpa todo o histórico do usuário
+   * Obtém estatísticas do histórico
    */
-  async clearHistory(patientId: string = 'anonymous'): Promise<void> {
-    try {
-      const q = query(
-        collection(db, this.COLLECTION_NAME),
-        where('patientId', '==', patientId)
-      );
-
-      const querySnapshot = await getDocs(q);
-      const deletePromises = querySnapshot.docs.map(doc => deleteDoc(doc.ref));
-      
-      await Promise.all(deletePromises);
-      console.log(`Histórico limpo para usuário: ${patientId}`);
-    } catch (error) {
-      console.error('Erro ao limpar histórico:', error);
-      throw new Error('Falha ao limpar histórico');
-    }
-  }
-
-  /**
-   * Gera estatísticas do histórico
-   */
-  async getHistoryStats(patientId: string = 'anonymous'): Promise<{
+  async getHistoryStats(): Promise<{
     totalConsultations: number;
-    mostCommonDiseases: string[];
     lastConsultation?: Date;
+    mostCommonDiseases: string[];
   }> {
     try {
-      const records = await this.getConsultationHistory();
+      // Usar a mesma rota de consultas para calcular estatísticas
+      const history = await this.getConsultationHistory();
       
+      const totalConsultations = history.length;
+      const lastConsultation = history.length > 0 ? history[0].timestamp : undefined;
+      
+      // Calcular doenças mais comuns
       const diseaseCount: { [key: string]: number } = {};
-      records.forEach(record => {
+      history.forEach(record => {
         record.result.diseases.forEach(disease => {
           diseaseCount[disease] = (diseaseCount[disease] || 0) + 1;
         });
       });
-
+      
       const mostCommonDiseases = Object.entries(diseaseCount)
         .sort(([,a], [,b]) => b - a)
         .slice(0, 5)
         .map(([disease]) => disease);
-
+      
       return {
-        totalConsultations: records.length,
-        mostCommonDiseases,
-        lastConsultation: records.length > 0 ? records[0].timestamp : undefined
+        totalConsultations,
+        lastConsultation,
+        mostCommonDiseases
       };
     } catch (error) {
-      console.error('Erro ao calcular estatísticas:', error);
+      console.error('❌ Erro ao carregar estatísticas:', error);
       return {
         totalConsultations: 0,
-        mostCommonDiseases: [],
-        lastConsultation: undefined
+        mostCommonDiseases: []
       };
     }
   }
 
   /**
-   * Verifica se o Firebase está configurado corretamente
+   * Testa conectividade com o backend
    */
-  async testConnection(): Promise<boolean> {
+  async testBackendConnection(): Promise<boolean> {
     try {
-      // Tenta fazer uma query simples para testar a conexão
-      const q = query(
-        collection(db, this.COLLECTION_NAME),
-        limit(1)
-      );
-      await getDocs(q);
+      console.log('🧪 Testando conexão com backend...');
+      await api.get('/api/health');
+      console.log('✅ Conexão com backend OK');
       return true;
     } catch (error) {
-      console.warn('Firebase não configurado ou inacessível:', error);
+      console.error('❌ Erro na conexão com backend:', error);
       return false;
     }
   }
 }
 
 // Instância singleton
-export const historyService = new FirebaseHistoryService();
+export const historyService = new BackendHistoryService();
