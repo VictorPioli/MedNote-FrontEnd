@@ -69,23 +69,6 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
     }
   };
 
-  const handleClearHistory = async () => {
-    if (!window.confirm(t('confirmClearHistory'))) {
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      await historyService.clearHistory();
-      await loadHistory();
-      await loadStats();
-    } catch (error) {
-      setError(t('clearHistoryError'));
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const formatDate = (date: Date) => {
     const locale = language === 'pt' ? 'pt-BR' : 'en-US';
     return new Intl.DateTimeFormat(locale, {
@@ -159,16 +142,6 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
           </div>
         ) : (
           <>
-            <div className="history-actions">
-              <button 
-                onClick={handleClearHistory} 
-                className="btn btn-danger btn-clear"
-                disabled={isLoading}
-              >
-                {t('clearHistory')}
-              </button>
-            </div>
-
             <div className="records-list">
               {records.map((record) => (
                 <div key={record.id} className="record-card">
